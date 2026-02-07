@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For My BABU ❤️</title>
+
+<style>
+:root{--pink:#ff2e63; --glass:rgba(255,255,255,.22)}
+
+/* ===== BASE STYLES ===== */
+body{
+ margin:0;
+ min-height:100vh;
+ background:linear-gradient(135deg,#ff4e8d,#ff9a9e);
+ font-family:'Segoe UI', sans-serif;
+ color:white;
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ overflow:hidden;
+ padding:15px;
+}
+
+/* ===== BACKGROUND HEARTS ===== */
+.heart{
+ position:fixed;
+ bottom:-20px;
+ opacity:.6;
+ animation:floatUp linear infinite;
+ pointer-events:none;
+ z-index: 0;
+}
+@keyframes floatUp{
+ to{transform:translateY(-120vh);opacity:0}
+}
+
+/* ===== CARD STYLES ===== */
+.card{
+ background:var(--glass);
+ backdrop-filter:blur(12px);
+ -webkit-backdrop-filter:blur(12px);
+ padding:25px 20px;
+ border-radius:24px;
+ width:100%;
+ max-width:360px;
+ text-align:center;
+ box-shadow:0 15px 35px rgba(0,0,0,0.2);
+ display:none;
+ border: 1px solid rgba(255,255,255,0.3);
+ z-index: 10;
+}
+
+.day-emoji { font-size: 70px; margin-bottom: 10px; display: block; filter: drop-shadow(0 0 10px rgba(0,0,0,0.1)); }
+
+/* ===== BUTTONS ===== */
+button{
+ padding:15px 25px;
+ border-radius:35px;
+ border:none;
+ cursor:pointer;
+ font-size:16px;
+ margin:10px 5px;
+ transition: all 0.3s ease;
+ font-weight: bold;
+}
+button:active{transform:scale(.90)}
+
+#unlockBtn, #nextBtn, #yesBtn, #actionBtn {
+    background: var(--pink);
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 46, 99, 0.4);
+}
+
+#noBtn { background: white; color: var(--pink); }
+
+/* ===== EFFECTS & SLIDESHOW ===== */
+@keyframes shake{ 0%,100%{transform:translate(0)} 25%{transform:translate(-3px,3px)} 50%{transform:translate(3px,-3px)} }
+.nervous{animation:shake .3s infinite}
+.glow{animation: pulse 1.5s infinite; }
+@keyframes pulse { 0% {box-shadow: 0 0 0 0 rgba(255, 46, 99, 0.7);} 70% {box-shadow: 0 0 0 15px rgba(255, 46, 99, 0);} 100% {box-shadow: 0 0 0 0 rgba(255, 46, 99, 0);} }
+
+#slideshow{display:none;margin-top:20px}
+.slide{display:none}
+.slide.active{display:block}
+.slide img{width:100%; border-radius:15px; border: 3px solid white;}
+.caption{font-size:14px; margin-top:10px; font-style: italic; opacity: 0.9;}
+
+#lockScreen input{
+ padding:15px;
+ border-radius:25px;
+ border:none;
+ width:85%;
+ margin-bottom:15px;
+ text-align:center;
+ font-size: 16px;
+}
+</style>
+</head>
+<body>
+
+<audio id="bgMusic" loop preload="auto" src="hirohasaimoto-fruit-of-the-heart-454938.mp3"></audio>
+
+<div id="lockScreen" class="card" style="display:block">
+ <h2>🔒 For Risha's Eyes Only</h2>
+ <p>Enter our secret word 💕</p>
+ <input id="password" type="password" placeholder="Password..."><br>
+ <button id="unlockBtn">Unlock My Heart ❤️</button>
+</div>
+
+<div id="dailyCard" class="card">
+    <span id="dayEmoji" class="day-emoji">🌹</span>
+    <h2 id="dayTitle">Happy Rose Day!</h2>
+    <p id="dayMessage"></p>
+    <button id="nextBtn">I Have a Question... 👉</button>
+</div>
+
+<div id="mainCard" class="card">
+ <h2>Risha… will you be my Valentine? 💖</h2>
+ <div class="buttons-row">
+  <button id="yesBtn">Yes BABU 💕</button>
+  <button id="noBtn">No 😢</button>
+ </div>
+ <div id="message" style="margin-top: 15px; font-weight: bold;"></div>
+ <div id="counter" style="font-size: 12px; margin-top: 10px; opacity: 0.8;"></div>
+ 
+ <button id="actionBtn" style="display:none"></button>
+
+ <div id="slideshow">
+  <div class="slide active"><img src="photo1.jpeg"><p class="caption">The way you hug me... 🥺</p></div>
+  <div class="slide"><img src="photo2.jpeg"><p class="caption">That smile is my favorite thing ❤️</p></div>
+  <div class="slide"><img src="photo3.jpeg"><p class="caption">Every moment with you is a gift.</p></div>
+ </div>
+</div>
+
+<script>
+/* --- CONFIGURATION --- */
+const PASSWORD = "Forever"; 
+const WHATSAPP_NUMBER = "917478640411";
+
+/* --- DAILY DATA & MESSAGES --- */
+const valentineData = {
+    7: {
+        emoji: "🌹", title: "Happy Rose Day!", 
+        msg: "A rose for the girl who makes my life smell like heaven.",
+        btnText: "Send a Rose 🌹",
+        wa: "Happy Rose Day BABU! 🌹\n\nI accepted your rose because you're the most beautiful flower in my garden. Thank you for making my life so colorful! I love you! ❤️"
+    },
+    8: {
+        emoji: "💍", title: "Happy Propose Day!", 
+        msg: "I'm not just asking for today, I'm asking for every tomorrow.",
+        btnText: "Send a Propose 💍",
+        wa: "Happy Propose Day! 💍\n\nI said YES to being your Valentine! My heart is officially yours forever. Please never let go! I love you so much. ❤️"
+    },
+    9: {
+        emoji: "🍫", title: "Happy Chocolate Day!", 
+        msg: "You're sweeter than Dairy Milk and silkier than Galaxy, BABU.",
+        btnText: "Send a Chocolate 🍫",
+        wa: "Happy Chocolate Day! 🍫\n\nEverything is sweeter when I'm with you. Thanks for being the treat I don't deserve but always want! ❤️"
+    },
+    10: {
+        emoji: "🧸", title: "Happy Teddy Day!", 
+        msg: "Sending you a virtual hug-machine since I'm not there to squeeze you.",
+        btnText: "Send a Teddy 🧸",
+        wa: "Happy Teddy Day! 🧸\n\nYou're my favorite teddy bear to cuddle with! Sending you a huge hug back through the phone. Stay soft, stay mine. ❤️"
+    },
+    11: {
+        emoji: "🤝", title: "Happy Promise Day!", 
+        msg: "I promise to choose you, even on the days we don't understand each other.",
+        btnText: "Send a Promise 🤝",
+        wa: "Happy Promise Day! 🤝\n\nI promise to keep choosing you every single day. Thank you for the beautiful surprise. I'm yours! ❤️"
+    },
+    12: {
+        emoji: "🫂", title: "Happy Hug Day!", 
+        msg: "Your hugs are my 'Safe Zone'. I miss being in your arms.",
+        btnText: "Send a Hug 🫂",
+        wa: "Happy Hug Day! 🫂\n\nThat hug on the website made my day. I wish I could hug you for real right now. Come see me soon! ❤️"
+    },
+    13: {
+        emoji: "💋", title: "Happy Kiss Day!", 
+        msg: "A million virtual kisses are waiting for you right here.",
+        btnText: "Send a Kiss 💋",
+        wa: "Happy Kiss Day! 💋\n\nMUAH! That was for the sweetest person in the world. I'm blushing! Happy Valentine's Week! ❤️"
+    },
+    14: {
+        emoji: "💝", title: "Happy Valentine's Day!", 
+        msg: "My heart found its home in you, Risha. Today and forever.",
+        btnText: "Send Love 💖",
+        wa: "HAPPY VALENTINE'S DAY BABU! 💖\n\nI love you more than words can say. Thank you for the memories, the clumsiness, and for being YOU. Let's stay like this forever! ❤️"
+    }
+};
+
+const today = new Date();
+const d = today.getDate();
+const m = today.getMonth() + 1;
+
+/* --- APP LOGIC --- */
+const lockScreen = document.getElementById("lockScreen");
+const dailyCard = document.getElementById("dailyCard");
+const mainCard = document.getElementById("mainCard");
+const bgMusic = document.getElementById("bgMusic");
+const actionBtn = document.getElementById("actionBtn");
+
+// 1. Unlock Logic
+document.getElementById("unlockBtn").onclick = () => {
+    if(document.getElementById("password").value === PASSWORD) {
+        lockScreen.style.display = "none";
+        
+        if(m === 2 && valentineData[d]) {
+            const data = valentineData[d];
+            document.getElementById("dayEmoji").innerText = data.emoji;
+            document.getElementById("dayTitle").innerText = data.title;
+            document.getElementById("dayMessage").innerText = data.msg;
+            
+            // Set the dynamic button text here
+            actionBtn.innerText = data.btnText; 
+            
+            dailyCard.style.display = "block";
+        } else {
+            // Default text if outside Valentines Week
+            actionBtn.innerText = "Send Love ❤️";
+            mainCard.style.display = "block";
+        }
+        bgMusic.play().catch(e => console.log("Music play blocked"));
+    } else {
+        alert("Wrong password, BABU! ❌");
+    }
+};
+
+// 2. Transition Logic
+document.getElementById("nextBtn").onclick = () => {
+    dailyCard.style.display = "none";
+    mainCard.style.display = "block";
+};
+
+// 3. Valentine Question Logic
+const noBtn = document.getElementById("noBtn");
+const yesBtn = document.getElementById("yesBtn");
+let escapes = 0;
+
+function moveNo() {
+    escapes++;
+    noBtn.style.position = "fixed";
+    noBtn.style.left = Math.random() * (window.innerWidth - 120) + "px";
+    noBtn.style.top = Math.random() * (window.innerHeight - 60) + "px";
+    document.getElementById("counter").innerText = `BABU dodged NO ${escapes} times! 😂`;
+    if(escapes > 3) yesBtn.classList.add("glow");
+}
+noBtn.onmouseenter = moveNo;
+noBtn.ontouchstart = (e) => { e.preventDefault(); moveNo(); };
+
+yesBtn.onclick = () => {
+    yesBtn.style.display = noBtn.style.display = "none";
+    actionBtn.style.display = "inline-block"; // Show the dynamic button
+    document.getElementById("message").innerText = "You're stuck with me now! ❤️";
+    document.getElementById("slideshow").style.display = "block";
+    startSlideshow();
+};
+
+// 4. Final WhatsApp Trigger
+actionBtn.onclick = () => {
+    const defaultMsg = "Hey BABU! I love the surprise! ❤️";
+    const finalMsg = (m === 2 && valentineData[d]) ? valentineData[d].wa : defaultMsg;
+    const extra = "\n\n(p.s. if possible please unblock me, I promise not to disturb you frequently! Maybe 1-2 times a month? 🥺)";
+    
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(finalMsg + extra)}`, "_blank");
+};
+
+function startSlideshow() {
+    let slides = document.querySelectorAll(".slide");
+    let i = 0;
+    setInterval(() => {
+        slides.forEach(s => s.classList.remove("active"));
+        i = (i + 1) % slides.length;
+        slides[i].classList.add("active");
+    }, 3500);
+}
+
+// Background Hearts
+for(let i=0;i<20;i++){
+    const h=document.createElement("div");
+    h.className="heart";
+    h.innerText=["❤️","💖","💕"][Math.floor(Math.random()*3)];
+    h.style.left=Math.random()*100+"vw";
+    h.style.animationDuration=4+Math.random()*4+"s";
+    h.style.fontSize=12+Math.random()*20+"px";
+    document.body.appendChild(h);
+}
+</script>
+</body>
+</html>
