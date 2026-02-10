@@ -14,19 +14,21 @@
 /* ===== BASE STYLES ===== */
 body {
     margin: 0;
-    min-height: 100vh;
-    /* Using min-height: 100dvh for better mobile browser support */
-    min-height: 100dvh; 
+    min-height: 100svh; /* safest viewport height */
     background: linear-gradient(135deg, #ff4e8d, #ff9a9e);
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     color: white;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow-x: hidden; /* Prevent horizontal scroll from flying hearts */
-    padding: 20px;
+    overflow: hidden;
+    padding: env(safe-area-inset-top) 
+             env(safe-area-inset-right) 
+             env(safe-area-inset-bottom) 
+             env(safe-area-inset-left);
     box-sizing: border-box;
 }
+
 
 /* ===== BACKGROUND HEARTS ===== */
 .heart {
@@ -121,7 +123,7 @@ button:active { transform: scale(.90); }
 .slide img { 
     width: 100%; 
     height: auto; 
-    max-height: 250px; /* Prevents card from getting too tall */
+    max-height: 400px; /* Prevents card from getting too tall */
     object-fit: cover;
     border-radius: 15px; 
     border: 3px solid white; 
@@ -146,7 +148,11 @@ button:active { transform: scale(.90); }
 </head>
 <body>
 
+
 <audio id="bgMusic" loop preload="auto" src="hirohasaimoto-fruit-of-the-heart-454938.mp3"></audio>
+
+<audio id="voiceNote" preload="auto" src="my-voice-for-you.mp3"></audio> 
+
 
 <div id="lockScreen" class="card" style="display:block">
     <h2>🔒 For Risha's Eyes Only</h2>
@@ -171,7 +177,14 @@ button:active { transform: scale(.90); }
     <div id="message" style="margin-top: 15px; font-weight: bold;"></div>
     <div id="counter" style="font-size: 12px; margin-top: 10px; opacity: 0.8;"></div>
     
-    <button id="actionBtn" style="display:none; margin: 20px auto;"></button>
+    <button id="actionBtn" style="display:none; margin: 20xpx auto;"></button>
+    <button id="voiceBtn"
+        style="display:none; margin-top:12px; background:white; color:#ff2e63;">
+    ▶️ Play My Voice 🥺🎧
+    </button>
+
+    
+    
 
     <div id="slideshow">
         <div class="slide active"><img src="photo1.jpeg"><p class="caption">The way you hug me... 🥺</p></div>
@@ -181,6 +194,15 @@ button:active { transform: scale(.90); }
 </div>
 
 <script>
+  
+const convinceTexts = [
+  "Are you sure? 🥺",
+  "Think again BABU… 💕",
+  "My heart will be sad 😢",
+  "Okay but… I really love you ❤️",
+  "Last chance 😌💖"
+];
+
 /* --- CONFIGURATION --- */
 const PASSWORD = "Forever"; 
 const WHATSAPP_NUMBER = "917478640411";
@@ -206,6 +228,24 @@ const dailyCard = document.getElementById("dailyCard");
 const mainCard = document.getElementById("mainCard");
 const bgMusic = document.getElementById("bgMusic");
 const actionBtn = document.getElementById("actionBtn");
+
+function typeMessage(text, speed = 45) {
+    message.innerHTML = "";
+    let i = 0;
+
+    const typing = setInterval(() => {
+        message.innerHTML += text.charAt(i);
+        i++;
+        if (i >= text.length) clearInterval(typing);
+    }, speed);
+}
+
+function heartbeatVibration() {
+    if ("vibrate" in navigator) {
+        navigator.vibrate([80, 40, 80, 40, 120]);
+    }
+}
+
 
 // 1. Unlock Logic
 document.getElementById("unlockBtn").onclick = () => {
@@ -240,33 +280,60 @@ let escapes = 0;
 
 function moveNo() {
     escapes++;
-    // Restricted area so it doesn't leave the screen viewport
+    heartbeatVibration();
+    
+    const yesTexts = [
+      "Yes 💕",
+      "Yes BABU 🥺",
+      "Okay Yes ❤️",
+      "I’m Yours 💖",
+      "Fine! YES 😍"
+    ];
+    
+    if (escapes <= yesTexts.length) {
+    yesBtn.innerText = yesTexts[escapes - 1];
+    }
+
+
+    // Move NO button randomly
     const padding = 20;
     const maxX = window.innerWidth - noBtn.offsetWidth - padding;
     const maxY = window.innerHeight - noBtn.offsetHeight - padding;
-    
+
     noBtn.style.position = "fixed";
     noBtn.style.left = Math.max(padding, Math.random() * maxX) + "px";
     noBtn.style.top = Math.max(padding, Math.random() * maxY) + "px";
-    
-    document.getElementById("counter").innerText = `Dodged ${escapes} times! 😂`;
-    
-    // Make YES button grow bigger as she tries to say no
-    let currentScale = 1 + (escapes * 0.1);
-    yesBtn.style.transform = `scale(${currentScale})`;
-    if(escapes > 3) yesBtn.classList.add("glow");
+
+    // Show convincing text
+    if (escapes <= convinceTexts.length) {
+      typeMessage(convinceTexts[escapes - 1]);
+    }
+
+    // Grow YES button
+    yesBtn.style.transform = `scale(${1 + escapes * 0.12})`;
+    yesBtn.classList.add("glow");
+
+    counter.innerText = `Still saying no? ${escapes} times 😂`;
+
+    // AUTO YES after too many NOs 😌
+    if (escapes >= 6) {
+        message.innerHTML = "Okay okay… I’ll take that as a YES 😍❤️";
+        setTimeout(() => yesBtn.click(), 1200);
+    }
 }
 
 noBtn.onmouseenter = moveNo;
 noBtn.ontouchstart = (e) => { e.preventDefault(); moveNo(); };
 
 yesBtn.onclick = () => {
+    navigator.vibrate?.([150, 80, 150, 80, 200]);
     yesBtn.style.display = noBtn.style.display = "none";
     document.getElementById("questionText").style.display = "none";
     actionBtn.style.display = "inline-block";
     document.getElementById("message").innerHTML = "You're stuck with me now! ❤️<br>I Love You!";
     document.getElementById("slideshow").style.display = "block";
     startSlideshow();
+    voiceBtn.style.display = "inline-block";
 };
 
 actionBtn.onclick = () => {
@@ -275,6 +342,17 @@ actionBtn.onclick = () => {
     const extra = "\n\n(p.s. please unblock me, I promise not to disturb you frequently! 🥺)";
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(baseMsg + extra)}`, "_blank");
 };
+
+const voiceBtn = document.getElementById("voiceBtn");
+const voiceNote = document.getElementById("voiceNote");
+
+voiceBtn.onclick = () => {
+    voiceNote.currentTime = 0;
+    voiceNote.play().catch(() => {
+        alert("Tap once anywhere on screen first ❤️");
+    });
+};
+
 
 function startSlideshow() {
     let slides = document.querySelectorAll(".slide");
