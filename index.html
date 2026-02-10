@@ -231,12 +231,13 @@ const m = today.getMonth() + 1;
 const lockScreen = document.getElementById("lockScreen");
 const dailyCard = document.getElementById("dailyCard");
 const mainCard = document.getElementById("mainCard");
+    
+const BG_NORMAL_VOL = 0.6;   // normal background level
+const BG_DUCK_VOL   = 0.25;  // while voice plays
+    
 const bgMusic = document.getElementById("bgMusic");
 bgMusic.volume = BG_NORMAL_VOL;
 const actionBtn = document.getElementById("actionBtn");
-
-const BG_NORMAL_VOL = 0.6;   // normal background level
-const BG_DUCK_VOL   = 0.25;  // while voice plays
 
 function typeMessage(text, speed = 45) {
     message.innerHTML = "";
