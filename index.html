@@ -100,12 +100,17 @@ button:active { transform: scale(.90); }
     box-shadow: 0 4px 15px rgba(255, 46, 99, 0.4);
 }
 
-#noBtn { 
-    background: white; 
-    color: var(--pink); 
-    position: relative; /* Base position */
-    z-index: 11;
+#noBtn {
+    background: white;
+    color: var(--pink);
+    position: absolute;   /* 🔑 important */
+    transition: left 0.25s ease, top 0.25s ease;
 }
+
+.card {
+    position: relative;   /* 🔑 parent boundary */
+}
+
 
 /* ===== EFFECTS & SLIDESHOW ===== */
 .glow { animation: pulse 1.5s infinite; }
@@ -280,50 +285,48 @@ let escapes = 0;
 
 function moveNo() {
     escapes++;
-    heartbeatVibration();
-    
-    const yesTexts = [
-      "Yes 💕",
-      "Yes BABU 🥺",
-      "Okay Yes ❤️",
-      "I’m Yours 💖",
-      "Fine! YES 😍"
-    ];
-    
-    if (escapes <= yesTexts.length) {
-    yesBtn.innerText = yesTexts[escapes - 1];
-    }
 
+    const card = mainCard.getBoundingClientRect();
+    const btn = noBtn.getBoundingClientRect();
 
-    // Move NO button randomly
-    const padding = 20;
-    const maxX = window.innerWidth - noBtn.offsetWidth - padding;
-    const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+    const padding = 10;
 
-    noBtn.style.position = "fixed";
-    noBtn.style.left = Math.max(padding, Math.random() * maxX) + "px";
-    noBtn.style.top = Math.max(padding, Math.random() * maxY) + "px";
+    const maxX = card.width - btn.width - padding;
+    const maxY = card.height - btn.height - padding;
 
-    // Show convincing text
+    const x = Math.random() * maxX;
+    const y = Math.random() * maxY;
+
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+
+    // WhatsApp typing text
     if (escapes <= convinceTexts.length) {
-      typeMessage(convinceTexts[escapes - 1]);
+        typeMessage(convinceTexts[escapes - 1]);
     }
 
-    // Grow YES button
+    // Heartbeat vibration
+    heartbeatVibration();
+
+    // YES grows bigger
     yesBtn.style.transform = `scale(${1 + escapes * 0.12})`;
     yesBtn.classList.add("glow");
 
-    counter.innerText = `Still saying no? ${escapes} times 😂`;
+    counter.innerText = `Still saying no? ${escapes} times 😆`;
 
-    // AUTO YES after too many NOs 😌
+    // Auto YES after too many tries 😌
     if (escapes >= 6) {
-        message.innerHTML = "Okay okay… I’ll take that as a YES 😍❤️";
+        typeMessage("Okay… I’ll take that as a YES ❤️");
         setTimeout(() => yesBtn.click(), 1200);
     }
 }
 
+
 noBtn.onmouseenter = moveNo;
-noBtn.ontouchstart = (e) => { e.preventDefault(); moveNo(); };
+noBtn.ontouchstart = (e) => {
+    e.preventDefault();
+    moveNo();
+};
 
 yesBtn.onclick = () => {
     navigator.vibrate?.([150, 80, 150, 80, 200]);
