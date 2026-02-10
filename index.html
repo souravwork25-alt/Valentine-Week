@@ -291,14 +291,22 @@ let escapes = 0;
 function moveNo() {
     escapes++;
 
-    const cardRect = mainCard.getBoundingClientRect();
-    const noRect   = noBtn.getBoundingClientRect();
-    const yesRect  = yesBtn.getBoundingClientRect();
+    const card = mainCard.getBoundingClientRect();
+    const no   = noBtn.getBoundingClientRect();
+    const yes  = yesBtn.getBoundingClientRect();
 
-    const padding = 10;
+    const padding = 12;
 
-    const maxX = cardRect.width - noRect.width - padding;
-    const maxY = cardRect.height - noRect.height - padding;
+    const maxX = card.width - no.width - padding;
+    const maxY = card.height - no.height - padding;
+
+    // YES position relative to card
+    const yesRel = {
+        left: yes.left - card.left,
+        top: yes.top - card.top,
+        right: yes.left - card.left + yes.width,
+        bottom: yes.top - card.top + yes.height
+    };
 
     let x, y, tries = 0;
 
@@ -307,29 +315,27 @@ function moveNo() {
         y = Math.random() * maxY;
         tries++;
 
-        // Predict NO button rectangle
-        const futureNo = {
-            left: cardRect.left + x,
-            top: cardRect.top + y,
-            right: cardRect.left + x + noRect.width,
-            bottom: cardRect.top + y + noRect.height
+        const noRel = {
+            left: x,
+            top: y,
+            right: x + no.width,
+            bottom: y + no.height
         };
 
-        // Check overlap with YES
         const overlap =
-            !(futureNo.right < yesRect.left ||
-              futureNo.left > yesRect.right ||
-              futureNo.bottom < yesRect.top ||
-              futureNo.top > yesRect.bottom);
+            !(noRel.right < yesRel.left ||
+              noRel.left > yesRel.right ||
+              noRel.bottom < yesRel.top ||
+              noRel.top > yesRel.bottom);
 
         if (!overlap) break;
 
-    } while (tries < 20); // safety limit
+    } while (tries < 30); // strong safety limit
 
     noBtn.style.left = x + "px";
     noBtn.style.top  = y + "px";
 
-    /* 💬 Typing animation */
+    /* 💬 WhatsApp typing */
     if (escapes <= convinceTexts.length) {
         typeMessage(convinceTexts[escapes - 1]);
     }
@@ -337,13 +343,13 @@ function moveNo() {
     /* 💓 Heartbeat */
     heartbeatVibration();
 
-    /* YES grows */
+    /* YES grows safely */
     yesBtn.style.transform = `scale(${1 + escapes * 0.12})`;
     yesBtn.classList.add("glow");
 
     counter.innerText = `Still saying no? ${escapes} times 😆`;
 
-    /* Auto-YES */
+    /* Auto YES */
     if (escapes >= 6) {
         typeMessage("Okay… I’ll take that as a YES ❤️");
         setTimeout(() => yesBtn.click(), 1200);
