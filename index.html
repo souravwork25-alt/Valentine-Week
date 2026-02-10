@@ -185,7 +185,7 @@ button:active { transform: scale(.90); }
     <button id="actionBtn" style="display:none; margin: 20xpx auto;"></button>
     <button id="voiceBtn"
         style="display:none; margin-top:12px; background:white; color:#ff2e63;">
-    ▶️ Play My Voice 🥺🎧
+    ▶️ Use Headphone 🥺🎧
     </button>
 
     
@@ -232,7 +232,11 @@ const lockScreen = document.getElementById("lockScreen");
 const dailyCard = document.getElementById("dailyCard");
 const mainCard = document.getElementById("mainCard");
 const bgMusic = document.getElementById("bgMusic");
+bgMusic.volume = BG_NORMAL_VOL;
 const actionBtn = document.getElementById("actionBtn");
+
+const BG_NORMAL_VOL = 0.6;   // normal background level
+const BG_DUCK_VOL   = 0.25;  // while voice plays
 
 function typeMessage(text, speed = 45) {
     message.innerHTML = "";
@@ -286,40 +290,65 @@ let escapes = 0;
 function moveNo() {
     escapes++;
 
-    const card = mainCard.getBoundingClientRect();
-    const btn = noBtn.getBoundingClientRect();
+    const cardRect = mainCard.getBoundingClientRect();
+    const noRect   = noBtn.getBoundingClientRect();
+    const yesRect  = yesBtn.getBoundingClientRect();
 
     const padding = 10;
 
-    const maxX = card.width - btn.width - padding;
-    const maxY = card.height - btn.height - padding;
+    const maxX = cardRect.width - noRect.width - padding;
+    const maxY = cardRect.height - noRect.height - padding;
 
-    const x = Math.random() * maxX;
-    const y = Math.random() * maxY;
+    let x, y, tries = 0;
+
+    do {
+        x = Math.random() * maxX;
+        y = Math.random() * maxY;
+        tries++;
+
+        // Predict NO button rectangle
+        const futureNo = {
+            left: cardRect.left + x,
+            top: cardRect.top + y,
+            right: cardRect.left + x + noRect.width,
+            bottom: cardRect.top + y + noRect.height
+        };
+
+        // Check overlap with YES
+        const overlap =
+            !(futureNo.right < yesRect.left ||
+              futureNo.left > yesRect.right ||
+              futureNo.bottom < yesRect.top ||
+              futureNo.top > yesRect.bottom);
+
+        if (!overlap) break;
+
+    } while (tries < 20); // safety limit
 
     noBtn.style.left = x + "px";
-    noBtn.style.top = y + "px";
+    noBtn.style.top  = y + "px";
 
-    // WhatsApp typing text
+    /* 💬 Typing animation */
     if (escapes <= convinceTexts.length) {
         typeMessage(convinceTexts[escapes - 1]);
     }
 
-    // Heartbeat vibration
+    /* 💓 Heartbeat */
     heartbeatVibration();
 
-    // YES grows bigger
+    /* YES grows */
     yesBtn.style.transform = `scale(${1 + escapes * 0.12})`;
     yesBtn.classList.add("glow");
 
     counter.innerText = `Still saying no? ${escapes} times 😆`;
 
-    // Auto YES after too many tries 😌
+    /* Auto-YES */
     if (escapes >= 6) {
         typeMessage("Okay… I’ll take that as a YES ❤️");
         setTimeout(() => yesBtn.click(), 1200);
     }
 }
+
 
 
 noBtn.onmouseenter = moveNo;
@@ -351,10 +380,38 @@ const voiceNote = document.getElementById("voiceNote");
 
 voiceBtn.onclick = () => {
     voiceNote.currentTime = 0;
-    voiceNote.play().catch(() => {
-        alert("Tap once anywhere on screen first ❤️");
-    });
+
+    // fade background music down
+    fadeVolume(bgMusic, BG_DUCK_VOL, 500);
+
+    voiceNote.play().catch(()=>{});
+
+    // when voice ends, restore bg music
+    voiceNote.onended = () => {
+        fadeVolume(bgMusic, BG_NORMAL_VOL, 600);
+    };
 };
+    
+voiceNote.onplay = () => {
+    typeMessage("Listen carefully… this is from my heart 💓");
+};
+
+function fadeVolume(audio, target, duration = 500) {
+    const stepTime = 30;
+    const steps = duration / stepTime;
+    const start = audio.volume;
+    const step = (target - start) / steps;
+    let currentStep = 0;
+
+    const fade = setInterval(() => {
+        currentStep++;
+        audio.volume = Math.min(1, Math.max(0, audio.volume + step));
+        if (currentStep >= steps) {
+            audio.volume = target;
+            clearInterval(fade);
+        }
+    }, stepTime);
+}
 
 
 function startSlideshow() {
