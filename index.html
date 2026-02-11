@@ -112,6 +112,33 @@ button:active { transform: scale(.90); }
 }
 
 
+/* ===== POPUP STYLES ===== */
+#tempPopup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    color: #ff2e63;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    z-index: 100;
+    width: 80%;
+    max-width: 300px;
+    text-align: center;
+    font-weight: bold;
+    border: 3px solid #ff2e63;
+}
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 99;
+}
+
 /* ===== EFFECTS & SLIDESHOW ===== */
 .glow { animation: pulse 1.5s infinite; }
 @keyframes pulse { 
@@ -151,8 +178,15 @@ button:active { transform: scale(.90); }
 #lockScreen input::placeholder { color: rgba(255,255,255,0.7); }
 </style>
 </head>
+
+
 <body>
 
+<div id="overlay" class="overlay"></div>
+<div id="tempPopup">
+    <p>This is for you..❤️❣️✨️<br>..............<br> I got attached to you without planning it. It just happened. One day you were there, and suddenly you mattered too much. I think about you in small quiet moments, when nothing is happening. I care in ways I don't know how to explain without sounding foolish. You stay in my head, in my habits, in my feelings. Even when I try not to, it's always you. That's the truth I don't hide anymore..💖💖</p>
+    <button id="closePopup" style="min-width: 80px; padding: 8px;">Okay! 🥰</button>
+</div>
 
 <audio id="bgMusic" loop preload="auto" src="hirohasaimoto-fruit-of-the-heart-454938.mp3"></audio>
 
@@ -365,6 +399,26 @@ noBtn.ontouchstart = (e) => {
 };
 
 yesBtn.onclick = () => {
+    // Check if date is 11 or 12 (February is month 2)
+    const todayDate = new Date().getDate();
+    const todayMonth = new Date().getMonth() + 1;
+
+    if (todayMonth === 2 && (todayDate === 11 || todayDate === 12)) {
+        document.getElementById("overlay").style.display = "block";
+        document.getElementById("tempPopup").style.display = "block";
+        
+        document.getElementById("closePopup").onclick = () => {
+            document.getElementById("overlay").style.display = "none";
+            document.getElementById("tempPopup").style.display = "none";
+            completeLoveAction(); // Continue to final screen
+        };
+    } else {
+        completeLoveAction(); // Just show final screen if other date
+    }
+};
+
+// Move your original "Yes" logic into this helper function
+function completeLoveAction() {
     navigator.vibrate?.([150, 80, 150, 80, 200]);
     yesBtn.style.display = noBtn.style.display = "none";
     document.getElementById("questionText").style.display = "none";
@@ -373,7 +427,7 @@ yesBtn.onclick = () => {
     document.getElementById("slideshow").style.display = "block";
     startSlideshow();
     voiceBtn.style.display = "inline-block";
-};
+}
 
 actionBtn.onclick = () => {
     const defaultMsg = "Hey BABU! I love the surprise! ❤️";
