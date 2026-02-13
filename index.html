@@ -183,8 +183,38 @@ button:active { transform: scale(.90); }
 <body>
 
 <div id="overlay" class="overlay"></div>
+<!-- IMAGE POPUP -->
+<div id="imagePopup" style="
+    display:none;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:white;
+    padding:15px;
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.3);
+    z-index:101;
+    width:85%;
+    max-width:320px;
+    text-align:center;
+    border:3px solid #ff2e63;
+">
+    <img src="4.jpg"
+         style="width:100%; border-radius:12px;">
+    <p style="color:#ff2e63; font-weight:bold; margin-top:8px;">
+        If I were with you right now, I’d steal the softest kiss and leave the rest of the world behind… Happy Kiss Day 🤍❣ ❤️
+    </p>
+    <button id="imageNextBtn" 
+            style="margin-top:10px; padding:8px 18px;">
+        Next 💕
+    </button>
+</div>
+
 <div id="tempPopup">
-    <p>This is for you..❤️❣️✨️<br>..............<br> I got attached to you without planning it. It just happened. One day you were there, and suddenly you mattered too much. I think about you in small quiet moments, when nothing is happening. I care in ways I don't know how to explain without sounding foolish. You stay in my head, in my habits, in my feelings. Even when I try not to, it's always you. That's the truth I don't hide anymore..💖💖</p>
+    <p>This is for you..❤️❣️✨️<br>..............<br> I got attached to you without planning it. It just happened. One day you were there, and suddenly you mattered too much. I think about you in small quiet moments, when nothing is happening. I care in ways I don't know how to explain without sounding foolish. You stay in my head, in my habits, in my feelings. Even when I try not to, it's always you. That's the truth I don't hide anymore..💖💖 <br> and some last lines for you... <br>       <br>   "Agar hona chahu tera Tum hone doge kya,<br> Rona chahu tere pass aake Tum rone dogi kya,
+
+<br>   <br>Chain nahi mil raha ab Mujhe kahi pe, <br> Tum apne dil mein chain Se rehne dogi kya"</p>
     <button id="closePopup" style="min-width: 80px; padding: 8px;">Okay! 🥰</button>
 </div>
 
@@ -399,23 +429,42 @@ noBtn.ontouchstart = (e) => {
 };
 
 yesBtn.onclick = () => {
-    // Check if date is 11 or 12 (February is month 2)
-    const todayDate = new Date().getDate();
-    const todayMonth = new Date().getMonth() + 1;
 
-    if (todayMonth === 2 && (todayDate === 11 || todayDate === 12)) {
-        document.getElementById("overlay").style.display = "block";
-        document.getElementById("tempPopup").style.display = "block";
-        
-        document.getElementById("closePopup").onclick = () => {
-            document.getElementById("overlay").style.display = "none";
-            document.getElementById("tempPopup").style.display = "none";
-            completeLoveAction(); // Continue to final screen
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    const todayOnly = new Date().toDateString();
+
+    const isTodayOrTomorrow =
+        todayOnly === today.toDateString() ||
+        todayOnly === tomorrow.toDateString();
+
+    if (isTodayOrTomorrow) {
+
+        // 🔹 SHOW IMAGE POPUP FIRST
+        overlay.style.display = "block";
+        imagePopup.style.display = "block";
+
+        imageNextBtn.onclick = () => {
+            imagePopup.style.display = "none";
+
+            // 🔹 THEN SHOW TEXT POPUP
+            tempPopup.style.display = "block";
         };
+
+        closePopup.onclick = () => {
+            overlay.style.display = "none";
+            tempPopup.style.display = "none";
+            completeLoveAction();
+        };
+
     } else {
-        completeLoveAction(); // Just show final screen if other date
+        completeLoveAction();
     }
 };
+
 
 // Move your original "Yes" logic into this helper function
 function completeLoveAction() {
