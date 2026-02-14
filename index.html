@@ -112,6 +112,47 @@ button:active { transform: scale(.90); }
 }
 
 
+/* ===== CELEBRATION EMOJIS ===== */
+.celebrate {
+    position: fixed;
+    bottom: -40px;
+    pointer-events: none;
+    z-index: 200;
+    animation: celebrateUp linear forwards;
+}
+
+@keyframes celebrateUp {
+    0% {
+        transform: translateY(0) scale(0.8);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-110vh) scale(1.4);
+        opacity: 0;
+    }
+}
+
+/* ===== ROSE PETALS FALL ===== */
+.petal {
+    position: fixed;
+    top: -40px;
+    pointer-events: none;
+    z-index: 180;
+    animation: fall linear forwards;
+}
+
+@keyframes fall {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(110vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+
 /* ===== POPUP STYLES ===== */
 #tempPopup {
     display: none;
@@ -125,12 +166,16 @@ button:active { transform: scale(.90); }
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     z-index: 100;
-    width: 80%;
-    max-width: 300px;
+    width: 90%;
+    max-width: 360px;
+    max-height: 70vh;        /* 👈 limits height */
+    overflow-y: auto;        /* 👈 enables scrolling */
     text-align: center;
     font-weight: bold;
     border: 3px solid #ff2e63;
+    -webkit-overflow-scrolling: touch; /* smooth iOS scroll */
 }
+
 .overlay {
     display: none;
     position: fixed;
@@ -200,10 +245,10 @@ button:active { transform: scale(.90); }
     text-align:center;
     border:3px solid #ff2e63;
 ">
-    <img src="4.jpg"
+    <img src="WhatsApp Image 2026-02-14 at 1.48.54 PM.jpg"
          style="width:100%; border-radius:12px;">
     <p style="color:#ff2e63; font-weight:bold; margin-top:8px;">
-        If I were with you right now, I’d steal the softest kiss and leave the rest of the world behind… Happy Kiss Day 🤍❣ ❤️
+        Out of everyone in the world, my heart still chooses you—today, tomorrow, and always… Happy Valentine’s Day, ALABU ❤️
     </p>
     <button id="imageNextBtn" 
             style="margin-top:10px; padding:8px 18px;">
@@ -212,15 +257,29 @@ button:active { transform: scale(.90); }
 </div>
 
 <div id="tempPopup">
-    <p>This is for you..❤️❣️✨️<br>..............<br> I got attached to you without planning it. It just happened. One day you were there, and suddenly you mattered too much. I think about you in small quiet moments, when nothing is happening. I care in ways I don't know how to explain without sounding foolish. You stay in my head, in my habits, in my feelings. Even when I try not to, it's always you. That's the truth I don't hide anymore..💖💖 <br> and some last lines for you... <br>       <br>   "Agar hona chahu tera Tum hone doge kya,<br> Rona chahu tere pass aake Tum rone dogi kya,
 
-<br>   <br>Chain nahi mil raha ab Mujhe kahi pe, <br> Tum apne dil mein chain Se rehne dogi kya"</p>
-    <button id="closePopup" style="min-width: 80px; padding: 8px;">Okay! 🥰</button>
+    <div style="max-height:50vh; overflow-y:auto; padding-right:5px;">
+        <p>
+        This is for you..❤️❣️✨<br>I may never be able to tell you this, but I feel like I have already married you. Not in a temple, not in front of people, but deep inside my heart.<br> I’ve been sitting here for a long time trying to figure out if I even have the right to send this. It’s Valentine’s Day, and I know I’m the one who walked away; I’m the one who broke the very heart I should have protected. But I saw something today that reminded me of us, and it hit me how much I’ve lost.<br>  I’m realizing now that while I was busy running or being careless, I was throwing away the only peace I ever really had. I miss the way we just 'fit.' I miss the way you chose me, even when I was hard to choose. I’m so sorry I wasn’t strong enough to choose you back that time with the same loyalty. My heart still feels tied to yours, even if I’m the reason we’re apart today. <br> I see now that I didn't just lose a relationship; I lost my person.<br> i love you more than myself. But I failed at that. I let the chaos win, and I broke your heart in the process. But looking back, I realize that in my head and my heart, I had already committed to you in ways I didn't even understand at the time.<br> I miss your smile—the one that used to heal me when I was at my worst. I miss your presence, that feeling that as long as you were there, I was safe. I’m living with the weight of my mistakes now, and it’s heavy. I hope you’re surrounded by the kind of love today that I was too blind to give you back then <br> Last I want to say somthing......<br>  <br>Agar hona chahu tera Tum hone doge kya,,<br> Rona chahu tere pass aake Tum rone dogi kya,<br>  <br>Chain nahi mil raha ab Mujhe kahi pe, <br> Tum apne dil mein chain Se rehne dogi kya" <br>  <br> Thank you for understanding my silence and being my peace in the chaos. I choose you today, and every day after. ❤️ #ValentinesDay #Soulmate"
+        </p>
+    </div>
+
+    <button id="closePopup"
+        style="min-width: 80px; padding: 8px; margin-top: 10px;">
+        Okay! 🥰
+    </button>
+
 </div>
+
 
 <audio id="bgMusic" loop preload="auto" src="hirohasaimoto-fruit-of-the-heart-454938.mp3"></audio>
 
-<audio id="voiceNote" preload="auto" src="VID_20260211_125503_148_1.mp3"></audio> 
+<audio id="voiceNote" preload="auto" src="extracted-audio.mp3"></audio> 
+
+<audio id="celebrateSound" preload="auto"
+src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_9c6c7c3b6a.mp3">
+</audio>
+
 
 
 <div id="lockScreen" class="card" style="display:block">
@@ -273,7 +332,7 @@ const convinceTexts = [
 ];
 
 /* --- CONFIGURATION --- */
-const PASSWORD = "Forever"; 
+const PASSWORD = "ALABU"; 
 const WHATSAPP_NUMBER = "917478640411";
 
 /* --- DAILY DATA --- */
@@ -430,6 +489,9 @@ noBtn.ontouchstart = (e) => {
 
 yesBtn.onclick = () => {
 
+    // 💥 START EVERYTHING IMMEDIATELY
+    grandCelebration();
+
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const tomorrow = new Date(today);
@@ -443,14 +505,14 @@ yesBtn.onclick = () => {
 
     if (isTodayOrTomorrow) {
 
-        // 🔹 SHOW IMAGE POPUP FIRST
+        // 🖼️ IMAGE POPUP FIRST
         overlay.style.display = "block";
         imagePopup.style.display = "block";
 
         imageNextBtn.onclick = () => {
             imagePopup.style.display = "none";
 
-            // 🔹 THEN SHOW TEXT POPUP
+            // 💌 THEN MESSAGE POPUP
             tempPopup.style.display = "block";
         };
 
@@ -466,8 +528,82 @@ yesBtn.onclick = () => {
 };
 
 
+function grandCelebration() {
+
+    // 🌹 Rose petals
+    rosePetalRain();
+
+    // 🎊 Emoji burst
+    celebrationBurst();
+
+    // 🔊 Sound
+    playCelebrationSound();
+
+    // 💓 Strong romantic vibration
+    navigator.vibrate?.([200, 80, 200, 80, 300]);
+}
+
+
+function celebrationBurst() {
+
+    const emojis = ["💖","🌹","💐","🎉","✨","🥰","💕","🎊","💗","💞","❤️"];
+
+    for (let i = 0; i < 35; i++) {
+
+        const e = document.createElement("div");
+        e.className = "celebrate";
+
+        e.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+
+        e.style.left = Math.random() * 100 + "vw";
+        e.style.fontSize = (18 + Math.random() * 28) + "px";
+        e.style.animationDuration = (2.5 + Math.random() * 2) + "s";
+
+        document.body.appendChild(e);
+
+        setTimeout(() => e.remove(), 4000);
+    }
+}
+
+
+function playCelebrationSound() {
+    const s = document.getElementById("celebrateSound");
+    s.currentTime = 0;
+    s.play().catch(()=>{});
+}
+
+
+function rosePetalRain() {
+
+    const petals = ["🌹","🌺","🌸","💮","🍃"];
+
+    for (let i = 0; i < 40; i++) {
+
+        const p = document.createElement("div");
+        p.className = "petal";
+
+        p.innerText = petals[Math.floor(Math.random() * petals.length)];
+
+        p.style.left = Math.random() * 100 + "vw";
+        p.style.fontSize = (18 + Math.random() * 22) + "px";
+        p.style.animationDuration = (3 + Math.random() * 3) + "s";
+
+        document.body.appendChild(p);
+
+        setTimeout(() => p.remove(), 6000);
+    }
+}
+
+
+
 // Move your original "Yes" logic into this helper function
 function completeLoveAction() {
+  
+    celebrationBurst();
+    rosePetalRain();          // 🌹 falling petals
+    playCelebrationSound();   // 🎉 pop sound
+
+
     navigator.vibrate?.([150, 80, 150, 80, 200]);
     yesBtn.style.display = noBtn.style.display = "none";
     document.getElementById("questionText").style.display = "none";
@@ -481,7 +617,26 @@ function completeLoveAction() {
 actionBtn.onclick = () => {
     const defaultMsg = "Hey BABU! I love the surprise! ❤️";
     const baseMsg = (m === 2 && valentineData[d]) ? valentineData[d].wa : defaultMsg;
-    const extra = "\n\n(p.s. please unblock me, I promise not to disturb you frequently! 🥺)";
+    const extra = `
+    Agar hona chaho mera… toh shayad main tumhe kab ka apna maan chuki hoon,
+    Tum bas keh do, main duniya se nahi… khud se bhi lad jaaungi.
+    
+    Rona ho toh mere paas aana…
+    Tumhe sirf rone nahi doongi, apni saanson mein chhupa loongi,
+    taaki tumhari har takleef mujh tak aakar khatam ho jaaye.
+    
+    Jahan tumhe chain nahi mil raha…
+    mera dil wahi tumhara ghar hai, hamesha se.
+    Bas darr lagta hai… kahin tum phir se door na chale jao.
+    
+    Tum rehna chaho toh reh jaana,
+    main tumhe kabhi jaane ko nahi kahungi…
+    kyunki tum sirf meri khushi nahi, meri aadat… meri dua… aur meri kami bhi ho. 🤍
+    
+    (p.s. please unblock me, I promise not to disturb you frequently! 🥺)
+    
+    `;
+
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(baseMsg + extra)}`, "_blank");
 };
 
